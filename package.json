@@ -1,0 +1,80 @@
+{
+  "name": "ascend",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "Ascend — Comparador y scrapers",
+  "author": "Vos",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder -w",
+    "publish": "electron-builder --win --publish always"
+  },
+  "devDependencies": {
+    "electron": "^38.6.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "ar.ascend.app",
+    "productName": "Ascend",
+    "asar": true,
+    "asarUnpack": [
+      "scrapers/**",
+      "hooks/**",
+      "node_modules/playwright-core/**",
+      "node_modules/puppeteer/**"
+    ],
+    "files": [
+      "**/*",
+      "!dist",
+      "!out"
+    ],
+    "extraResources": [
+      {
+        "from": "scrapers",
+        "to": "scrapers"
+      },
+      {
+        "from": "hooks",
+        "to": "hooks"
+      },
+      {
+        "from": "maestros_convertido.txt",
+        "to": "maestros_convertido.txt"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/ascend.ico",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "YOUR_GITHUB_USER",
+          "repo": "YOUR_REPO_NAME"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/ascend.icns"
+    }
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "electron-log": "^5.0.0",
+    "electron-updater": "^6.1.7",
+    "playwright": "^1.56.1",
+    "xlsx": "^0.18.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justanthrcoder/Shop4me.git"
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "cookies": [
+    {
+      "name": "PHPSESSID",
+      "value": "Mdbhc2zcIg5uRbMp3NbZamMmT1",
+      "domain": "web1.suizoargentina.com",
+      "path": "/usuarios",
+      "expires": 1763225963.44181,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo/gaH/r1f70PhjKGMeUmXDg",
+      "value": "FrOUg3x0BP3v72YYxgcJo7buJx",
+      "domain": "web1.suizoargentina.com",
+      "path": "/usuarios",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "mZvc58YYn6ZsqZH4JwUmxdQ1oQ",
+      "domain": "web1.suizoargentina.com",
+      "path": "/fonts",
+      "expires": 1763225959.459376,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo/gaH/r1f70PhjKGMeUmXDg",
+      "value": "Jwk09Vs3Jyk1R8u4eyc39cUUJi",
+      "domain": "web1.suizoargentina.com",
+      "path": "/fonts",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "KBnc2zQL8MmW1N6HQCoRlqVQm5",
+      "domain": "web1.suizoargentina.com",
+      "path": "/login",
+      "expires": 1763225961.676145,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo/gaH/r1f70PhjKGMeUmXDg",
+      "value": "oZjSrpSej2eyaR6QesGQc7uMW7",
+      "domain": "web1.suizoargentina.com",
+      "path": "/login",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "qknBdFefApD3IKnKm8MrNavB04",
+      "domain": "web1.suizoargentina.com",
+      "path": "/css",
+      "expires": 1763225963.479219,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo/gaH/r1f70PhjKGMeUmXDg",
+      "value": "5VDMC1Jd70Dq70lmgNG9zQbOBt",
+      "domain": "web1.suizoargentina.com",
+      "path": "/css",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo0NA/CWMuYYNo4I8L/u1i/Y",
+      "value": "roq6fq0ige3el84hk5m9qu2efc",
+      "domain": "web1.suizoargentina.com",
+      "path": "/",
+      "expires": 1763225959.22654,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.2108564153.1763222363",
+      "domain": ".suizoargentina.com",
+      "path": "/",
+      "expires": 1797782366.744267,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "2CR2mnM7PdVRd9kfZBaxCIYBXI",
+      "domain": "web1.suizoargentina.com",
+      "path": "/",
+      "expires": 1763225966.627604,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_QdijNH3TydUwr4R8aUgSo/gaH/r1f70PhjKGMeUmXDg",
+      "value": "p48KiWYr5P9gvv0qvg53M4URlX",
+      "domain": "web1.suizoargentina.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_W16ZJ6GZH9",
+      "value": "GS2.1.s1763222363$o1$g1$t1763222366$j57$l0$h0",
+      "domain": ".suizoargentina.com",
+      "path": "/",
+      "expires": 1797782366.748625,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://web1.suizoargentina.com",
+      "localStorage": [
+        {
+          "name": "202511151",
+          "value": "1"
+        }
+      ]
+    }
+  ]
+}

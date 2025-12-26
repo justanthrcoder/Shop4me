@@ -1,0 +1,158 @@
+{
+  "cookies": [
+    {
+      "name": "_GRECAPTCHA",
+      "value": "09ADiQh0cMttecYDRh9fa2jcAgZ_K089BN2mSWRFiV1VIKe-AKMLz8hPoB_di5FFNsCj1hH1sW4W4BIjOK4pyuDV8",
+      "domain": "www.google.com",
+      "path": "/recaptcha",
+      "expires": 1780334155.123407,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "764dc4e0d4f02496882e2a4e0cb35fc5",
+      "value": "52ce541c8a233f61fea6c0a9148ac622",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS012ca1e6",
+      "value": "018e6eb372befcdac62eaa66e7dc79db70189861bffa26a7561448e4e779bd794806848b174a79dba1870a4c7d920c24e11243f6a5cc3bd66b2b48fcac2920c615c0af0b62",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1105854641.1764782148",
+      "domain": ".delsud.com.ar",
+      "path": "/",
+      "expires": 1799342147.901062,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "deeff6e17b234b8f4378732beff43b40",
+      "value": "383b1fad5eae50704f0d19b7f85896d0",
+      "domain": "apinotificaciones.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "TS012ca1e6",
+      "value": "018e6eb37221b304efee4a2e8986c851de8bd187db7ea3e204e9758f7b3d28326e7b5f47c9f3b3fc06d8498fdd6fe27b8a53bd519bb50c3110dc87fcc0dcafb9798c7ca7c5",
+      "domain": "apinotificaciones.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS03808cbe027",
+      "value": "083fc24b01ab20008ffbc54b7cccc3f33745d092b3ffecf1397530971d8c28a4a400cfdd01e2aa160842b4ea2a11300029a3d882364c5489297f36fe971e26f65e83080bc9e43e1d3990205dd9b930cd4759fe460673da1eb067ad10aa584dff",
+      "domain": "apinotificaciones.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS03808cbe027",
+      "value": "083fc24b01ab2000a350c6ff4f9d207ed5ad79837a86e570fa67e8f7fc5c9742ad1cc0e967675c100885f8f7c8113000a835498f8fee2711df70e142116a5aa2d74285a771e5da85839fc496a02c9deeee0675c86ac6e29100e5f699bfe3bc5d",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_D3598G40CF",
+      "value": "GS2.1.s1764782147$o1$g1$t1764782160$j47$l0$h0",
+      "domain": ".delsud.com.ar",
+      "path": "/",
+      "expires": 1799342160.58839,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://pedidos.delsud.com.ar",
+      "localStorage": [
+        {
+          "name": "globalPageSize",
+          "value": "20"
+        },
+        {
+          "name": "nextDelivery",
+          "value": "{}"
+        },
+        {
+          "name": "historialPedidoOrden",
+          "value": "D"
+        },
+        {
+          "name": "historialFacturaOrden",
+          "value": "D"
+        },
+        {
+          "name": "access_token",
+          "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkMyQUNDODczMUQ1NjgyQ0E5QTIwOTVCM0I3OEI3NTExNzhCMkI2Q0FSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IndxekljeDFXZ3NxYUlKV3p0NHQxRVhpeXRzbyJ9.eyJuYmYiOjE3NjQ3ODIxNTYsImV4cCI6MTc2NDc4NTc1NiwiaXNzIjoiaHR0cDovL2RlbHN1ZCIsImF1ZCI6ImRkc19iZSIsImNsaWVudF9pZCI6ImRkc19mZSIsInN1YiI6IjYwMzhmZjM5LWUxYjAtNDQ4MC05MjBkLWZiZTM3ODI0ODM0YSIsImF1dGhfdGltZSI6MTc2NDc4MjE1NiwiaWRwIjoibG9jYWwiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhY2VzYXIuc2VsbWFAZ21haWwuY29tIiwidW5pcXVlX25hbWUiOiJhY2VzYXIuc2VsbWFAZ21haWwuY29tIiwicGFzc3dvcmRfZXhwaXJlZF9hdCI6IjIwMjYtMDEtMDFUMTM6MzM6MjIiLCJwYXNzd29yZEV4cGlyZWRBdCI6IjIwMjYtMDEtMDFUMTM6MzM6MjIiLCJzdGF0dXNfaWQiOjEsIm5hbWUiOiJEcm9nQ2FzYW1hciIsImxhc3RfbmFtZSI6IkNlc2FyIiwidmtidXIiOiJCU0FTIiwid2VyazEiOiJBVkxMIiwid2VyazIiOiIiLCJrdW5ucl9pZCI6IjAwMDAwMTIzMDEiLCJQZXJmaWwiOnsiQ29tcHJhciI6WyJDb25zdWx0YXIiLCJFZGl0YXIiLCJBcHJvYmFyIiwiR2VuZXJhciJdLCJEZXZvbHVjaW9uZXMiOlsiQ29uc3VsdGFyIiwiRWRpdGFyIiwiQXByb2JhciIsIkdlbmVyYXIiXSwiSGlzdG9yaWFsLlBlZGlkb3MiOlsiQ29uc3VsdGFyIiwiRXhwb3J0YXIiXSwiSGlzdG9yaWFsLkZhY3R1cmFzIjpbIkNvbnN1bHRhciIsIkV4cG9ydGFyIl0sIkhpc3RvcmlhbC5BUEYiOlsiQ29uc3VsdGFyIiwiRXhwb3J0YXIiXSwiSGlzdG9yaWFsLlJlcGFydG9zIjpbIkNvbnN1bHRhciIsIkV4cG9ydGFyIl0sIkhpc3RvcmlhbC5QcmVjaW9zIjpbIkNvbnN1bHRhciIsIkV4cG9ydGFyIl0sIkdlc3Rpb24uTGltaXRlX0NyZWRpdG8iOlsiQ29uc3VsdGFyIl0sIkNvbnRhY3RvIjpbIkNvbnN1bHRhciIsIkVkaXRhciJdLCJDYXRhbG9nbyI6WyJFeHBvcnRhciJdLCJVc3VhcmlvcyI6WyJDcmVhciIsIkNvbnN1bHRhciJdLCJHZXN0aW9uLkRldWRhIjpbIkNvbnN1bHRhciJdLCJHZXN0aW9uLlJlc3VtZW4iOlsiQ29uc3VsdGFyIl0sIkNvbXByYXIuVXBsb2FkIjpbIkNvbnN1bHRhciIsIkVkaXRhciJdLCJIaXN0b3JpYWwuSmF2aXQiOlsiQ29uc3VsdGFyIiwiRXhwb3J0YXIiXSwiYXl1ZGEiOlsiQ29uc3VsdGFyIl0sIkNvbmZpZ3VyYWNpb24iOlsiQ29uc3VsdGFyIiwiRWRpdGFyIl0sIk1hcmtldFBsYWNlIjpbIkNvbnN1bHRhciJdLCJIaXN0b3JpYWwuQmFja09yZGVyIjpbIkV4cG9ydGFyIiwiQ29uc3VsdGFyIl0sIkNvbXByYXIuSW1wZXJkaWJsZXMiOlsiQ29uc3VsdGFyIiwiRWRpdGFyIl0sIkdlc3Rpb24uTWVudGEiOlsiQ29uc3VsdGFyIl0sIkhpc3RvcmlhbC5UcmFuc2ZlciI6WyJDb25zdWx0YXIiLCJFeHBvcnRhciJdfSwicm9sZSI6WyJEVUXDkU8iXSwiZW1haWwiOiJhY2VzYXIuc2VsbWFAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b21lcl9zdGF0dXMiOiIiLCJqdGkiOiIwQ0UzMjU2OEZCNDk3NDNFNzkxNEYwRDJGM0I3MDZENCIsImlhdCI6MTc2NDc4MjE1Niwic2NvcGUiOlsiZGRzX2JlIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbInB3ZCJdfQ.i6Qt9jOMXDlw7AAp8Y7ILGvbuPIn2C4gwp9opM-kfa3h4HL3pdVq2GMmzlP2qnrEDO9DZLD24Tso5YWLA0iTDvb28ZBtGT1w2oGf6FYVt29eRdirqmWcXsBVnSKXwsllPkQmROOtrSvE5gD7bggGmoPbnQ7BM8ROQV47Doom0eC0W2N0DhdFy9RsTwHgvFBxvTME6arwm3WxdEix5KXThGTAYEk90PKHHsRa4UIC-k8csRbo-0F2ndQrkm8fpBg7Lga8e0LouLt4YFFiDmg1S0l3_93_yFHp2RQ3VinnwO5w4TXybfub0r-brdTZ__39-fgQlQA6IxnlOjyxHIhBwg"
+        },
+        {
+          "name": "userId",
+          "value": "0000012301"
+        },
+        {
+          "name": "_grecaptcha",
+          "value": "09ADiQh0fwg0MuXh4I6WBrnsMR1UaGFx2w7igiWbQqLOmqVvcBgwErKUczeWtsbzr24YE8Szy-3Xno6L5rQuNGIFcOnW7YgutwUEqWOdsZRG4Nxkyqm3r4jyix7NPCu7Yf"
+        },
+        {
+          "name": "refresh_token",
+          "value": "DDCBE4535052F35EDE74447DD1E8F7751C4FBE267E25D2E67051CE11B5FB3337"
+        },
+        {
+          "name": "utcUpdatedDate",
+          "value": "Wed, 03 Dec 2025 17:16:00 GMT"
+        },
+        {
+          "name": "persist:root",
+          "value": "{\"HistoricReturns\":\"{}\",\"_persist\":\"{\\\"version\\\":-1,\\\"rehydrated\\\":true}\"}"
+        }
+      ]
+    },
+    {
+      "origin": "https://www.google.com",
+      "localStorage": [
+        {
+          "name": "rc::a",
+          "value": "ejB6eXZoYmI5N2N0"
+        },
+        {
+          "name": "rc::f",
+          "value": "0aANTiuHmAjOYj1qJafVfBALO2s3Q0O6I1I6Ob8wjgF8bVs6x91-sLljAA4THNKUya0HhMjRg"
+        }
+      ]
+    }
+  ],
+  "pedidos": {
+    "12301": 15,
+    "00000": 85
+  }
+}

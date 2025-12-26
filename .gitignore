@@ -1,0 +1,10 @@
+node_modules
+dist
+release
+build
+out
+.DS_Store
+*.log
+.env
+settings.json
+maestros_convertido.txt

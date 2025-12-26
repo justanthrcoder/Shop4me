@@ -1,0 +1,96 @@
+{
+  "cookies": [
+    {
+      "name": "_GRECAPTCHA",
+      "value": "09ADiQh0e9tkuErkIJzhGg3G7Je5ZaJdtWs4Mt7LdES5wDYKwj_pkL9Eas9B_cAs5dVSptZQ-gLTPdzmbtVpt54tw",
+      "domain": "www.google.com",
+      "path": "/recaptcha",
+      "expires": 1779731023.437892,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "764dc4e0d4f02496882e2a4e0cb35fc5",
+      "value": "d8743f56f633009604f51d95f51d4f72",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS012ca1e6",
+      "value": "018e6eb3721d2befc3eb36dc5c6d40f35e86118daf44e44eceee4a1098f6af505c3e69e80dcb3ccf371cde6e2bec39bd5fb1aadfe11e73dfa493a3ec0c6a3ec255932795a3",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.780069595.1764179021",
+      "domain": ".delsud.com.ar",
+      "path": "/",
+      "expires": 1798739021.289406,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TSd869344a027",
+      "value": "083fc24b01ab2000439faa98e3b7514f33117b90b391804e21cf21e7d276d69e1e98eac1b118e978088994c6a411300036b320456dc2894c82e19aadc40a8a013f30399cf716930a96fd641a6f71e1f6c8bb56d389293e2873cc5c25919ef04c",
+      "domain": "pedidos.delsud.com.ar",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_D3598G40CF",
+      "value": "GS2.1.s1764179021$o1$g0$t1764179025$j56$l0$h0",
+      "domain": ".delsud.com.ar",
+      "path": "/",
+      "expires": 1798739025.323791,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://pedidos.delsud.com.ar",
+      "localStorage": [
+        {
+          "name": "_grecaptcha",
+          "value": "09ADiQh0cE6SdRR0GRutNzyEIxB28au_nvk-LAsMQxzFtXbxRarTkETkOxfwoWovF90jgBal7DnNtg0ZLB772RYaxedXMbPWEmVAZbFvgVpPggPtBcOC_nnKha-bDOeCtH"
+        },
+        {
+          "name": "persist:root",
+          "value": "{\"HistoricReturns\":\"{}\",\"_persist\":\"{\\\"version\\\":-1,\\\"rehydrated\\\":true}\"}"
+        }
+      ]
+    },
+    {
+      "origin": "https://www.google.com",
+      "localStorage": [
+        {
+          "name": "rc::d-1764179025660",
+          "value": "MW04anRldzF0Z2p5eTk="
+        },
+        {
+          "name": "rc::a",
+          "value": "MTl1cjNzeGtmc3JpNw=="
+        },
+        {
+          "name": "rc::f",
+          "value": "0aANTiuHk-O9r3ZIlsZR2LJk6bz9R-sGFOL3Nd8z-5kPwrLoRMPzuWc3C5JC-423U0r6J8vpc"
+        }
+      ]
+    }
+  ]
+}

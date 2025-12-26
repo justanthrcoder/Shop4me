@@ -1,0 +1,1402 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Shop4me</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+                 style-src 'self' 'unsafe-inline';
+                 img-src 'self' data:;
+                 script-src 'self';
+                 connect-src 'self';" />
+  <style>
+    /* ====== Paleta y gradientes ====== */
+    :root {
+      --bg: #0b0f17;
+      --ink: #e6edf3;
+      --muted: #9ba3ab;
+      --card: #121828;
+      --grid: #1f2740;
+      --ok: #22c55e;
+      --bad: #ef4444;
+      --accent: #5da0ff;
+
+      --g1: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 30%, #a78bfa 70%, #7c3aed 100%);
+      --g2: linear-gradient(135deg, #10b981 0%, #34d399 40%, #60a5fa 100%);
+      --gBtn: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* ====== Layout ====== */
+    #appRoot {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 80px;
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      border-right: 1px solid var(--grid);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      width: 40px;
+      height: 40px;
+      background: var(--g1);
+      border-radius: 12px;
+      margin-bottom: 32px;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 20px;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+    }
+
+    .nav-btn.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: #6366f1;
+      box-shadow: 0 0 0 1px #6366f1;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-width: 0;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 64px;
+      display: grid;
+      /* 2 Columnas: Centro (Input), Derecha (Botones) */
+      grid-template-columns: 1fr 120px;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--grid);
+      background: rgba(11, 15, 23, 0.8);
+      backdrop-filter: blur(10px);
+      gap: 16px;
+      z-index: 100;
+      /* Asegurar que topbar esté por encima del contenido */
+    }
+
+    /* Contenedor del buscador para centrarlo en la columna central */
+    .search-box-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .search-box {
+      position: relative;
+      max-width: 600px;
+      width: 100%;
+      z-index: 1001;
+      /* Más alto que topbar */
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--grid);
+      border-radius: 8px;
+      padding: 10px 16px 10px 40px;
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(93, 160, 255, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    /* Acciones a la derecha (Botón Buscar) */
+    .topbar-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Predictive Results */
+    #predictiveResults {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--grid);
+      border-radius: 8px;
+      margin-top: 6px;
+      z-index: 9999;
+      /* Z-index muy alto para flotar sobre todo */
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .predictive-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.1s;
+    }
+
+    .predictive-item:last-child {
+      border-bottom: none;
+    }
+
+    .predictive-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .predictive-item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      pointer-events: none;
+    }
+
+    .predictive-item-ean {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      pointer-events: none;
+    }
+
+    .predictive-empty {
+      padding: 12px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--grid);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin: 0 0 24px 0;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 20px;
+      background: var(--g1);
+      border-radius: 2px;
+    }
+
+    /* Header Row in Cards for titles + actions */
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .card-header-row h2 {
+      margin-bottom: 0;
+    }
+
+    /* Mini Search / Filter Input */
+    .mini-search {
+      position: relative;
+      width: 250px;
+    }
+
+    .mini-search input {
+      width: 100%;
+      background: #0f131a;
+      border: 1px solid var(--grid);
+      border-radius: 6px;
+      padding: 6px 12px 6px 30px;
+      color: var(--ink);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .mini-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .mini-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--gBtn);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--grid);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+      border-color: var(--muted);
+    }
+
+    /* Inputs & Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .input {
+      width: 100%;
+      background: #0f131a;
+      border: 1px solid var(--grid);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input:focus {
+      border-color: var(--accent);
+    }
+
+    /* Compare Table */
+    /* MODIFICACIÓN: Flex column para que los hijos (rows) se apilen y margin-top: auto funcione correctamente */
+    #compareWrap {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex: 1;
+      padding-bottom: 60px;
+    }
+
+    .comp-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 0 16px 16px;
+      border-bottom: 1px solid var(--grid);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comp-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--grid);
+    }
+
+    .comp-row.new-row {
+      animation: fadeIn 0.4s ease;
+    }
+
+    .comp-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .comp-cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Product Info in Table */
+    .prod-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .prod-title {
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.4;
+      padding-right: 24px;
+      position: relative;
+    }
+
+    .prod-sku {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'SF Mono', Consolas, monospace;
+    }
+
+    .copyable-ean {
+      cursor: pointer;
+      border-bottom: 1px dashed var(--muted);
+    }
+
+    .copyable-ean:hover {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    .row-x {
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: var(--bad);
+      cursor: pointer;
+      opacity: 0;
+      transition: 0.2s;
+    }
+
+    .comp-row:hover .row-x {
+      opacity: 1;
+    }
+
+    /* Quantity Box */
+    .qty-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .qtyInput {
+      width: 50px;
+      text-align: center;
+      background: #0f131a;
+      border: 1px solid var(--grid);
+      border-radius: 4px;
+      color: var(--ink);
+      padding: 4px;
+    }
+
+    .qtyMinus,
+    .qtyPlus {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid var(--grid);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qtyMinus:hover,
+    .qtyPlus:hover {
+      background: var(--grid);
+      color: var(--ink);
+    }
+
+    /* Supplier Cell */
+    .comp-supplier {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .comp-supplier:hover:not(.disabled) {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .comp-supplier.disabled {
+      opacity: 0.5;
+      cursor: default;
+      background: transparent;
+    }
+
+    .comp-supplier.is-winner {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: var(--ok);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);
+    }
+
+    .radio {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      accent-color: var(--ok);
+      cursor: pointer;
+    }
+
+    .price-col {
+      margin-top: 4px;
+    }
+
+    .price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .price-muted {
+      text-decoration: line-through;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .no-stock {
+      color: var(--bad);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .minpill {
+      display: inline-block;
+      font-size: 11px;
+      background: var(--grid);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--grid);
+      color: var(--muted);
+    }
+
+    /* Summary Footer */
+    /* MODIFICACIÓN: Eliminado position: sticky y bottom: 0. Ahora es un bloque normal */
+    .comp-summary {
+      background: var(--card);
+      border-top: 2px solid var(--grid);
+      margin-top: auto;
+      /* position: sticky;  <- ELIMINADO */
+      /* bottom: 0;         <- ELIMINADO */
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .totals-amt {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ok);
+    }
+
+    .summary-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Scraper Logs */
+    .log-container {
+      background: #000;
+      border: 1px solid var(--grid);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 12px;
+      height: 200px;
+      overflow-y: auto;
+      color: #a78bfa;
+      white-space: pre-wrap;
+    }
+
+    /* Modal Priority */
+    #priorityBackdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+    }
+
+    #priorityModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      z-index: 201;
+      background: var(--card);
+      border: 1px solid var(--grid);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #priorityList {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    #priorityList li {
+      background: #0f131a;
+      border: 1px solid var(--grid);
+      margin-bottom: 8px;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #priorityList li.dragging {
+      opacity: 0.5;
+      border-color: var(--accent);
+    }
+
+    #priorityList li::after {
+      content: '☰';
+      color: var(--muted);
+    }
+
+    .tolerance-box {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+
+    /* === NEW: File List Items (Table Layout) === */
+    .file-items-container {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--grid);
+      border-radius: 8px;
+      background: #0f131a;
+    }
+
+    .file-list-header {
+      display: grid;
+      grid-template-columns: 3fr 1.5fr 100px 40px;
+      padding: 12px 16px;
+      background: var(--grid);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .file-list-row {
+      display: grid;
+      grid-template-columns: 3fr 1.5fr 100px 40px;
+      padding: 10px 16px;
+      align-items: center;
+      border-bottom: 1px solid var(--grid);
+      transition: background 0.1s;
+    }
+
+    .file-list-row:last-child {
+      border-bottom: none;
+    }
+
+    .file-list-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .file-cell {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 8px;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .file-cell-ean {
+      font-family: 'SF Mono', Consolas, monospace;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Input de cantidad en la lista (Estilo claro/blanco) */
+    .file-qty-input {
+      width: 60px;
+      background: #e2e8f0;
+      /* Fondo claro */
+      border: 1px solid var(--muted);
+      color: #0f172a;
+      /* Texto oscuro */
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 4px 6px;
+      text-align: center;
+      outline: none;
+    }
+
+    .file-qty-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(93, 160, 255, 0.3);
+    }
+
+    .sku-x {
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: bold;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .sku-x:hover {
+      color: var(--bad);
+    }
+
+    .load-more-btn {
+      font-size: 12px;
+      padding: 8px;
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+
+    /* Loading Overlay */
+    #compareLoading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 23, 0.9);
+      backdrop-filter: blur(5px);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #compareLoading.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .loader-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--grid);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-container {
+      width: 300px;
+      height: 6px;
+      background: var(--grid);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--g2);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Totals Bar (Bottom) */
+    #totalsBar {
+      height: 64px;
+      background: var(--card);
+      border-top: 1px solid var(--grid);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .total-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .total-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .total-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .subtle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    /* Settings Styles */
+    .settings-layout {
+      display: flex;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .settings-sidebar {
+      width: 200px;
+      border-right: 1px solid var(--grid);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .settings-nav-btn {
+      text-align: left;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .settings-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+    }
+
+    .settings-nav-btn.active {
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      font-weight: 500;
+    }
+
+    .settings-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 16px;
+    }
+
+    .settings-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--grid);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .toggle-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Switch CSS */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--grid);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--ok);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+
+    .settings-save-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--grid);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="drawerBackdrop" style="display:none; position:fixed; inset:0; z-index:40;"></div>
+
+  <div id="appRoot">
+
+    <nav id="sidebar" class="sidebar">
+      <div class="brand"></div>
+
+      <div class="nav-btn active" id="tabSearchBtn" title="Buscador">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <div class="nav-btn" id="tabCompareBtn" style="display:none;" title="Comparador">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      </div>
+
+      <div class="nav-btn" id="tabScraperBtn" style="display:none;" title="Logs del Scraper">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <div class="nav-btn" id="tabSettingsBtn" title="Configuración">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+    </nav>
+
+    <main class="main">
+
+      <div class="topbar">
+        <div class="search-box-container">
+          <div class="search-box" id="searchBar">
+            <div class="search-icon">🔍</div>
+            <input id="q" class="search-input" type="text" placeholder="Buscar producto, EAN, droga..."
+              autocomplete="off" />
+            <div id="predictiveResults" class="hidden"></div>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="runBtn" class="btn">
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <section id="tab-search" class="tab-pane">
+          <div style="max-width: 1200px; margin: 0 auto;">
+            <div class="card" style="text-align:center; padding: 48px 24px;">
+              <h2 style="justify-content:center; margin-bottom:16px;">¿Qué querés cotizar hoy?</h2>
+              <p style="color:var(--muted); margin-bottom:32px;">
+                Ingresá el nombre, droga o código de barras (EAN) arriba para comenzar.
+              </p>
+              <div style="display:flex; justify-content:center; gap:16px;">
+                <button id="addToCompareBtn" class="btn btn-ghost">Agregar a lista (+)</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Carga Masiva</h2>
+              <p style="color:var(--muted); margin-bottom:16px;">
+                Podés cargar un archivo <code>.csv</code> o <code>.txt</code> con una lista de EANs y cantidades para
+                cotizar múltiples ítems.
+              </p>
+              <input type="file" id="fileInput" accept=".csv,.txt" style="display:none" />
+              <div style="display:flex; gap:12px; align-items:center;">
+                <button id="fileTrigger" class="btn btn-ghost">Seleccionar archivo</button>
+              </div>
+            </div>
+
+            <div id="itemsLoadedCard" class="card hidden">
+              <div class="card-header-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <h2>Ítems Cargados <span id="itemsCount"
+                      style="color:var(--muted); font-weight:normal; font-size:16px;">(0)</span></h2>
+                  <div id="status" style="font-size:12px; color:var(--accent);"></div>
+                </div>
+
+                <div class="mini-search">
+                  <div class="mini-search-icon">🔍</div>
+                  <input type="text" id="filterFileItems" placeholder="Filtrar lista..." />
+                </div>
+              </div>
+
+              <button id="clearFileBtn" class="btn btn-ghost hidden"
+                style="color:var(--bad); border-color:var(--bad); margin-bottom:12px; font-size:12px; padding:6px 12px;">Borrar
+                todo</button>
+
+              <div class="file-list-header">
+                <span>Producto</span>
+                <span>EAN</span>
+                <span style="text-align:center;">Cant.</span>
+                <span></span>
+              </div>
+
+              <div id="fileItemList" class="file-items-container"></div>
+            </div>
+
+            <div id="captchaModal" class="hidden card"
+              style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999; width:320px; box-shadow:0 20px 50px rgba(0,0,0,0.7); border:1px solid var(--accent);">
+              <h3 style="margin-top:0; color:var(--accent);">Monroe requiere CAPTCHA</h3>
+              <div style="background:#fff; padding:10px; border-radius:4px; margin:16px 0; text-align:center;">
+                <img id="captchaImage" src="" alt="CAPTCHA" style="max-width:100%; height:auto; display:block;" />
+              </div>
+              <input id="captchaInput" type="text" class="input" placeholder="Ingresá el código..."
+                style="margin-bottom:16px; text-align:center; letter-spacing:2px; font-weight:bold;" />
+              <button id="captchaSubmitBtn" class="btn" style="width:100%;">Enviar CAPTCHA</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-compare" class="tab-pane hidden" style="height:100%; display:flex; flex-direction:column;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h2>Comparativa de Precios</h2>
+            <div id="compareActions" style="display:flex; gap:12px;">
+              <button id="priorityBtn" class="btn btn-ghost" style="font-size:13px;">⚙ Prioridades</button>
+            </div>
+          </div>
+
+          <div style="flex:1; position:relative; min-height:0; display:flex; flex-direction:column;">
+            <div id="compareLoading">
+              <div class="loader-spinner"></div>
+              <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar-fill"></div>
+              </div>
+              <div id="progressHint" style="color:var(--accent); font-weight:bold; font-size:14px; margin-bottom:4px;">
+                0%</div>
+              <div id="progressText" class="progress-text">Iniciando...</div>
+              <div id="progressEta" style="font-size: 13px; color: var(--muted); margin-top: 4px;"></div>
+            </div>
+
+            <div id="compareWrap">
+            </div>
+          </div>
+
+          <div id="totalsBar" class="hidden">
+            <div class="total-block">
+              <span class="total-label">Total Compra</span>
+              <span class="total-value" id="totalsAmt">$ 0,00</span>
+            </div>
+            <div class="total-block" style="align-items:flex-end;">
+              <span class="total-label">Ahorro estimado</span>
+              <span class="total-value" style="color:var(--ok);" id="avgSave">—</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-scraper" class="tab-pane hidden">
+          <div class="card">
+            <h2>Registros de Scrapers</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+              <div>
+                <h3 style="font-size:14px; color:var(--muted); margin-bottom:8px;">Monroe Americana</h3>
+                <div id="log-monroe" class="log-container"></div>
+              </div>
+              <div>
+                <h3 style="font-size:14px; color:var(--muted); margin-bottom:8px;">Del Sud</h3>
+                <div id="log-delsud" class="log-container"></div>
+              </div>
+              <div>
+                <h3 style="font-size:14px; color:var(--muted); margin-bottom:8px;">Suizo Argentina</h3>
+                <div id="log-suizo" class="log-container"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-settings" class="tab-pane hidden" style="height: 100%;">
+          <div class="card" style="height: 100%; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--grid);">
+              <h2 style="margin: 0;">Configuración</h2>
+            </div>
+
+            <div class="settings-layout" style="flex: 1; padding: 24px; overflow: hidden;">
+              <nav class="settings-sidebar">
+                <button class="settings-nav-btn active" data-pane="general">General</button>
+                <button class="settings-nav-btn" data-pane="credentials">Credenciales</button>
+                <button class="settings-nav-btn" data-pane="experimental">Experimental</button>
+              </nav>
+
+              <form id="settingsForm" class="settings-content">
+
+                <div id="settings-pane-general" class="settings-pane">
+                  <div class="settings-section-title">Preferencias Generales</div>
+                  <p style="color: var(--muted); font-size: 14px;">
+                    Configuración de la aplicación y comportamiento general.
+                    (Próximamente más opciones aquí)
+                  </p>
+                </div>
+
+                <div id="settings-pane-credentials" class="settings-pane hidden">
+                  <div class="settings-section-title">Credenciales de Acceso</div>
+
+                  <div style="margin-bottom: 24px;">
+                    <h3 style="font-size: 14px; color: var(--accent); margin-bottom: 12px;">Droguería Del Sud</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                      <div class="form-group">
+                        <label>Usuario / Email</label>
+                        <input id="delsud_user" type="text" class="input" placeholder="ej. usuario@delsud.com" />
+                      </div>
+                      <div class="form-group">
+                        <label>Contraseña</label>
+                        <input id="delsud_pass" type="password" class="input" placeholder="••••••••" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 24px;">
+                    <h3 style="font-size: 14px; color: var(--accent); margin-bottom: 12px;">Suizo Argentina</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                      <div class="form-group">
+                        <label>Usuario</label>
+                        <input id="suizo_user" type="text" class="input" placeholder="Usuario Suizo" />
+                      </div>
+                      <div class="form-group">
+                        <label>Contraseña</label>
+                        <input id="suizo_pass" type="password" class="input" placeholder="••••••••" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 24px;">
+                    <h3 style="font-size: 14px; color: var(--accent); margin-bottom: 12px;">Monroe Americana</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                      <div class="form-group">
+                        <label>Usuario / Email</label>
+                        <input id="monroe_user" type="text" class="input" placeholder="usuario@monroe.com" />
+                      </div>
+                      <div class="form-group">
+                        <label>Contraseña</label>
+                        <input id="monroe_pass" type="password" class="input" placeholder="••••••••" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="settings-pane-experimental" class="settings-pane hidden">
+                  <div class="settings-section-title">Funciones Experimentales</div>
+
+                  <div class="toggle-row">
+                    <div>
+                      <div class="toggle-label">Modo Intenso</div>
+                      <div class="toggle-desc">Realiza búsquedas más agresivas y profundas (puede ser más lento).</div>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="intensiveModeSwitch">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+
+                  <div style="margin-top: 24px; border-top: 1px solid var(--grid); padding-top: 16px;">
+                    <div class="settings-section-title" style="font-size: 14px; border: none; margin-bottom: 8px;">
+                      Algoritmos de Carga de Archivo (Batch)
+                    </div>
+                    <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">
+                      Activa el uso de archivos JSON locales para búsquedas masivas en lugar de iterar manualmente.
+                    </p>
+
+                    <div class="toggle-row">
+                      <div>
+                        <div class="toggle-label">Batch File: Monroe Americana</div>
+                        <p class="toggle-desc">
+                          Usa <code>monroe_batch.json</code> inyectado en la consola de Monroe, en lugar de la búsqueda
+                          manual.
+                        </p>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" id="monroeFileAlgorithmSwitch">
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="toggle-row">
+                      <div>
+                        <div class="toggle-label">Batch File: Del Sud</div>
+                        <p class="toggle-desc">
+                          Usa <code>delsud_batch.json</code> inyectado en la consola de Del Sud, en lugar de la búsqueda
+                          manual.
+                        </p>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" id="delsudFileAlgorithmSwitch">
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="toggle-row">
+                      <div>
+                        <div class="toggle-label">Batch File: Suizo Argentina</div>
+                        <p class="toggle-desc">
+                          Usa <code>suizo_batch.json</code> inyectado en la consola de Suizo Argentina, en lugar de la
+                          búsqueda
+                          manual.
+                        </p>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" id="suizoFileAlgorithmSwitch">
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="settings-save-footer">
+                  <div id="settingsStatus" class="hint"></div>
+                  <button type="submit" id="saveSettingsBtn" class="btn" style="width: auto; padding: 0 24px;">Guardar
+                    Cambios</button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="priorityBackdrop" class="hidden"></div>
+  <div id="priorityModal" class="card hidden">
+    <h2>Configurar prioridades</h2>
+    <p>Arrastrá las droguerías para elegir el orden de selección a precios iguales o similares.</p>
+
+    <div class="tolerance-box">
+      <label>
+        Tolerancia (opcional):
+        <span>$</span>
+        <input id="priorityTolerance" class="input" type="number" min="0" step="10" value="0" />
+      </label>
+      <p style="font-size: 12px; margin-top: 8px;">Se elegirá la droguería prioritaria si su precio no supera al más
+        barato por más de este monto.</p>
+    </div>
+
+    <ul id="priorityList">
+    </ul>
+
+    <button id="priorityCloseBtn" class="btn" style="width:100%; margin-top:16px;">Listo</button>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+
+</html>
