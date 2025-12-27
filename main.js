@@ -1,4 +1,4 @@
-// main.js — Ascend
+// main.js — Shop4me
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -25,7 +25,7 @@ const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 let delSudCache = new Map(); // Mapa: Termino/Nombre -> EAN
 
 if (process.platform === 'win32') {
-  try { app.setAppUserModelId('ar.ascend.app'); } catch { }
+  try { app.setAppUserModelId('ar.shop4me.app'); } catch { }
 }
 
 const gotLock = app.requestSingleInstanceLock();
@@ -78,7 +78,8 @@ async function loadSettingsFromFile() {
           monroe_pass: '',
           monroe_client: '',
         },
-        experimental: { intensiveMode: false }
+        experimental: { intensiveMode: false },
+        general: { chromePath: '' }
       };
     }
   } catch (err) {
@@ -96,7 +97,8 @@ async function loadSettingsFromFile() {
         monroe_pass: '',
         monroe_client: '',
       },
-      experimental: { intensiveMode: false }
+      experimental: { intensiveMode: false },
+      general: { chromePath: '' }
     };
     isIntenseMode = false;
   }
@@ -122,6 +124,26 @@ ipcMain.handle('settings:save', async (_evt, settings) => {
     return { ok: false, error: err.message };
   }
 });
+
+// --- NUEVO HANDLER: Selección de Chrome ---
+ipcMain.handle('settings:select-chrome-path', async () => {
+  if (!mainWindow) return { canceled: true };
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Seleccionar ejecutable de Google Chrome',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Ejecutables', extensions: ['exe'] },
+      { name: 'Todos los archivos', extensions: ['*'] }
+    ]
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return { canceled: true };
+  }
+  return { path: result.filePaths[0] };
+});
+// ------------------------------------------
 
 /**
  * db:load (FIX)
@@ -449,6 +471,7 @@ function spawnScraper(name, { headless } = {}) {
     KEEP_BROWSER_OPEN: '0',
     START_MINIMIZED: defaultHeadless ? '0' : '1',
     SCRAPER_MODE: shouldForceBatch ? 'BATCH' : 'MANUAL',
+    CHROME_PATH: appSettings?.general?.chromePath || process.env.CHROME_PATH || '',
 
     DELSUD_USER: creds.delsud_user || process.env.DELSUD_USER || '',
     DELSUD_PASS: creds.delsud_pass || process.env.DELSUD_PASS || '',
@@ -673,6 +696,12 @@ async function runOneTermAcrossAll(term) {
     }
 
     isDone[name] = false;
+    if (name === 'monroe' && appSettings?.experimental?.monroeFileAlgorithm) {
+      // do nothing special for single term if batch file mode is on?
+      // usually single term search uses standard input unless blocked.
+      // Assuming standard input works for single terms even in file algo mode,
+      // or we just rely on standard input.
+    }
     if (name === 'monroe') expectMonroeCsv = false;
 
     emitLine(name, `\n[APP] Enviando término: ${term}\n`);

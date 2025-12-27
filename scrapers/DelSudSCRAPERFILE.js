@@ -28,10 +28,8 @@ const PASS = process.env.DELSUD_PASS;
 const STATE_FILE = process.env.STATE_FILE || path.resolve(__dirname, 'state-delsud.json');
 
 const CHROME_PATH = process.env.CHROME_PATH || process.env.CHROME_EXE || null;
-const PLAYWRIGHT_HEADLESS =
-    (process.env.PLAYWRIGHT_HEADLESS === '1' || process.env.PLAYWRIGHT_HEADLESS === 'true') ? true : false;
-const KEEP_BROWSER_OPEN =
-    (process.env.KEEP_BROWSER_OPEN === '0' || process.env.KEEP_BROWSER_OPEN === 'false') ? false : true;
+const PLAYWRIGHT_HEADLESS = (process.env.PLAYWRIGHT_HEADLESS === '1' || process.env.PLAYWRIGHT_HEADLESS === 'true') ? true : false;
+const KEEP_BROWSER_OPEN = (process.env.KEEP_BROWSER_OPEN === '0' || process.env.KEEP_BROWSER_OPEN === 'false') ? false : true;
 
 const ENABLE_DIAG = (process.env.DIAG === '1');
 const DIAG_DIR = path.resolve(__dirname, 'diagnostics');
@@ -467,8 +465,10 @@ function jaroWinkler(s1, s2) {
     if (!s1 || !s2) return 0;
     if (s1 === s2) return 1;
 
-    const a = s1, b = s2;
-    const len1 = a.length, len2 = b.length;
+    const a = s1;
+    const b = s2;
+    const len1 = a.length;
+    const len2 = b.length;
     const matchDist = Math.floor(Math.max(len1, len2) / 2) - 1;
 
     const aMatch = new Array(len1).fill(false);

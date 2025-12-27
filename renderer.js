@@ -94,6 +94,12 @@ const credInputs = {
   monroe_pass: $('#monroe_pass'),
 };
 
+const generalInputs = {
+  chrome_path: $('#chrome_path')
+};
+
+const selectChromeBtn = $('#selectChromeBtn'); // New button reference
+
 const settingsNavBtns = $$('.settings-nav-btn');
 const settingsPanes = $$('.settings-pane');
 
@@ -1673,6 +1679,9 @@ async function handleSaveSettings(e) {
         delsudFileAlgorithm: delsudFileAlgorithmSwitch?.checked || false,
         suizoFileAlgorithm: suizoFileAlgorithmSwitch?.checked || false,
       },
+      general: {
+        chromePath: generalInputs.chrome_path?.value || '',
+      }
     };
 
     await window.api.saveSettings(settings);
@@ -1684,6 +1693,23 @@ async function handleSaveSettings(e) {
     saveSettingsBtn.disabled = false;
     saveSettingsBtn.textContent = 'Guardar Cambios';
   }
+}
+
+// ---- NEW: Handler for Chrome Path Selection ----
+if (selectChromeBtn) {
+  selectChromeBtn.addEventListener('click', async () => {
+    try {
+      const result = await window.api.selectChromePath();
+      if (result && result.path) {
+        if (generalInputs.chrome_path) {
+          generalInputs.chrome_path.value = result.path;
+        }
+      }
+    } catch (err) {
+      console.error('Error selecting chrome path:', err);
+      showSettingsStatus('Error al abrir selector de archivo.', true);
+    }
+  });
 }
 
 async function loadSettings() {
@@ -1707,6 +1733,10 @@ async function loadSettings() {
           delsudFileAlgorithmSwitch.checked = !!settings.experimental.delsudFileAlgorithm;
         if (suizoFileAlgorithmSwitch)
           suizoFileAlgorithmSwitch.checked = !!settings.experimental.suizoFileAlgorithm;
+      }
+      if (settings.general) {
+        if (generalInputs.chrome_path)
+          generalInputs.chrome_path.value = settings.general.chromePath || '';
       }
     }
   } catch (err) {

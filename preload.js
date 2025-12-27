@@ -11,16 +11,19 @@ contextBridge.exposeInMainWorld('api', {
 
   submitCaptcha: (code) => ipcRenderer.invoke('monroe:captcha-submit', code),
 
-  // **** (NUEVO) Funciones de Configuración ****
+  // **** Funciones de Configuración ****
   saveSettings: (settings) => ipcRenderer.invoke('settings:save', settings),
   loadSettings: () => ipcRenderer.invoke('settings:load'),
-  // **** (FIN NUEVO) ****
+
+  // --- NUEVO: Función para abrir el selector de archivos ---
+  selectChromePath: () => ipcRenderer.invoke('settings:select-chrome-path'),
+  // --------------------------------------------------------
 
   onLine: (cb) => ipcRenderer.on('scraper:line', (_e, payload) => cb(payload)),
   onTable: (cb) => ipcRenderer.on('scraper:table', (_e, payload) => cb(payload)),
   onCompareUpdate: (cb) => ipcRenderer.on('compare:update', (_e, payload) => cb(payload)),
 
-  // **** (NUEVO) Listener para resultados parciales del batch ****
+  // Listener para resultados parciales del batch
   onScraperResult: (cb) => ipcRenderer.on('scraper:result', (_e, payload) => cb(payload)),
 
   onStatus: (cb) => ipcRenderer.on('batch:status', (_e, payload) => cb(payload)),

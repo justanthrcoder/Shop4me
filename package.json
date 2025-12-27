@@ -1,8 +1,8 @@
 {
-  "name": "ascend",
+  "name": "shop4me",
   "version": "1.0.0",
   "main": "main.js",
-  "description": "Ascend — Comparador y scrapers",
+  "description": "Shop4me — Comparador y scrapers",
   "author": "Vos",
   "scripts": {
     "start": "electron .",
@@ -14,8 +14,8 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "ar.ascend.app",
-    "productName": "Ascend",
+    "appId": "ar.shop4me.app",
+    "productName": "Shop4me",
     "asar": true,
     "asarUnpack": [
       "scrapers/**",
@@ -44,7 +44,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "build/ascend.ico",
+      "icon": "logo.png",
       "publish": [
         {
           "provider": "github",
@@ -63,7 +63,7 @@
     },
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "build/ascend.icns"
+      "icon": "logo.png"
     }
   },
   "dependencies": {

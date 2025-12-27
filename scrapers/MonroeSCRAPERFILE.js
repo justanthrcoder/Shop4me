@@ -31,9 +31,6 @@ const USERNAME = process.env.MONROE_USER;
 const PASSWORD = process.env.MONROE_PASS;
 
 // --- CONFIGURACIÓN DE CHROME CON ROTACIÓN DE PUERTO ---
-const CHROME_EXE_PATH = process.env.CHROME_PATH || "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-// Alternativa común: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-
 // Generar un puerto aleatorio entre 9222 y 9999 para evitar detección y conflictos
 const MIN_PORT = 9222;
 const MAX_PORT = 9999;
@@ -887,7 +884,7 @@ async function scrapeCartTable(page, convertedExcelPath, inputFullData = []) {
     const pageData = await extractDataFromCurrentPage(page);
     if (pageData && pageData.length > 0) {
       allResults.push(...pageData);
-      console.log(`   -> Extraídos ${pageData.length} productos.`);
+      console.log(`   -> Extraídos ${pageData.length} productos.`);
     }
 
     const nextPageAvailable = await page.evaluate(async () => {
@@ -975,13 +972,13 @@ async function scrapeCartTable(page, convertedExcelPath, inputFullData = []) {
       console.log('\n================ RESULTADOS OBTENIDOS ================');
       outputData.forEach((item, index) => {
         console.log(`\n--- [ Producto #${index + 1} ] ---`);
-        console.log(`Nombre       : ${item.producto}`);
-        console.log(`$ Unitario   : $${item.precio_unitario}`);
-        console.log(`$ Público    : $${item.precio_publico}`);
-        console.log(`Stock        : ${item.stock.toUpperCase()}`);
+        console.log(`Nombre       : ${item.producto}`);
+        console.log(`$ Unitario   : $${item.precio_unitario}`);
+        console.log(`$ Público    : $${item.precio_publico}`);
+        console.log(`Stock        : ${item.stock.toUpperCase()}`);
         console.log(`EAN (Linked): ${item.ean} ${item.link_score > 0 ? '(Match: ' + item.link_score + ')' : ''}`);
         if (LINK_DEBUG && item.link_score === 0) {
-          console.log(`   (DEBUG) Falló match para: "${item.producto}"`);
+          console.log(`   (DEBUG) Falló match para: "${item.producto}"`);
         }
       });
       console.log('\n======================================================\n');
@@ -1207,17 +1204,40 @@ async function startInteractiveSearchLoop(page) {
 // ---------------------------------------------------------------------------
 // NUEVO: LANZADOR AUTOMÁTICO DE CHROME
 // ---------------------------------------------------------------------------
+function candidateChromePaths() {
+  const envPath = process.env.CHROME_PATH || process.env.CHROME_EXE;
+  return [
+    envPath,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
+  ].filter(Boolean);
+}
+
 async function launchChromeManually() {
-  console.log('[BOOT] Verificando ejecutable de Chrome...');
-  if (!fs.existsSync(CHROME_EXE_PATH)) {
-    console.error(`ERROR: No se encontró Chrome en: ${CHROME_EXE_PATH}`);
+  console.log('[BOOT] Buscando ejecutable de Chrome...');
+
+  const paths = candidateChromePaths();
+  const chosenPath = paths.find(p => fs.existsSync(p));
+
+  if (!chosenPath) {
+    console.error(`ERROR: No se encontró Chrome en ninguna ruta estándar ni en env vars.`);
+    console.error(`Rutas probadas: ${paths.join(', ')}`);
     process.exit(1);
   }
+
+  console.log(`[BOOT] Usando ejecutable: ${chosenPath}`);
+
   if (!fs.existsSync(CHROME_USER_DATA_DIR)) {
     try { fs.mkdirSync(CHROME_USER_DATA_DIR, { recursive: true }); } catch (e) { }
   }
+
   console.log(`[BOOT] Lanzando proceso Google Chrome en puerto ${CHROME_DEBUG_PORT}...`);
-  globalChromeProcess = spawn(CHROME_EXE_PATH, [
+  globalChromeProcess = spawn(chosenPath, [
     `--remote-debugging-port=${CHROME_DEBUG_PORT}`,
     `--user-data-dir=${CHROME_USER_DATA_DIR}`,
     '--window-position=-2400,-2400', // <--- CAMBIO CLAVE: Mueve la ventana fuera del monitor

@@ -1240,10 +1240,20 @@
 
                 <div id="settings-pane-general" class="settings-pane">
                   <div class="settings-section-title">Preferencias Generales</div>
-                  <p style="color: var(--muted); font-size: 14px;">
+                  <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">
                     Configuración de la aplicación y comportamiento general.
-                    (Próximamente más opciones aquí)
                   </p>
+
+                  <div class="form-group">
+                    <label>Ruta del ejecutable de Chrome</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input id="chrome_path" type="text" class="input" style="flex:1;"
+                        placeholder="C:\Program Files\Google\Chrome\Application\chrome.exe" />
+                      <button type="button" id="selectChromeBtn" class="btn btn-ghost">📂 Seleccionar</button>
+                    </div>
+                    <p class="hint" style="margin-top: 6px;">Ruta completa al ejecutable de Google Chrome para que el
+                      sistema pueda abrirlo.</p>
+                  </div>
                 </div>
 
                 <div id="settings-pane-credentials" class="settings-pane hidden">
