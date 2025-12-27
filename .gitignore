@@ -12,3 +12,5 @@ maestros_convertido.txt
 *_user_data
 scrapers/*_user_data
 scrapers/monroe_user_data
+# Sacar carpeta DB
+DB/
