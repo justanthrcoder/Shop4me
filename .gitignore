@@ -8,3 +8,7 @@ out
 .env
 settings.json
 maestros_convertido.txt
+# Ignorar perfiles de navegador
+*_user_data
+scrapers/*_user_data
+scrapers/monroe_user_data
