@@ -458,12 +458,26 @@ function spawnScraper(name, { headless } = {}) {
 
   const creds = appSettings?.credentials || {};
 
+  // === SOLUCIÓN CRÍTICA: NODE_PATH INJECTION ===
+  // Determinamos dónde están los node_modules del proyecto principal
+  // Si estamos empaquetados (asar), están en app.asar.unpacked/node_modules
+  // Si estamos en dev, están en ./node_modules
+  let nodePath = '';
+  if (app.isPackaged) {
+    nodePath = path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules');
+  } else {
+    nodePath = path.join(__dirname, 'node_modules');
+  }
+
   // === SANITIZED CREDENTIALS BLOCK ===
   // Note: All hardcoded defaults have been removed.
   // The app will now only use what is in settings.json or env variables.
   const env = {
     ...process.env,
     ELECTRON_RUN_AS_NODE: '1',
+    // Inyectamos NODE_PATH para que el scraper encuentre playwright y xlsx
+    NODE_PATH: nodePath,
+
     HEADLESS: defaultHeadless ? '1' : '0',
     PUPPETEER_HEADLESS: defaultHeadless ? 'new' : 'false',
     PLAYWRIGHT_HEADLESS: defaultHeadless ? '1' : '0',

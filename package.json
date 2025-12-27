@@ -20,7 +20,9 @@
     "asarUnpack": [
       "scrapers/**",
       "hooks/**",
+      "node_modules/playwright/**",
       "node_modules/playwright-core/**",
+      "node_modules/xlsx/**",
       "node_modules/puppeteer/**"
     ],
     "files": [
