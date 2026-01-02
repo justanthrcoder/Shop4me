@@ -30,16 +30,14 @@ const URL = 'https://www.monroeamericana.com.ar/apps/login/ext/index.html';
 const USERNAME = process.env.MONROE_USER;
 const PASSWORD = process.env.MONROE_PASS;
 
-// --- CONFIGURACIÓN DE CHROME CON ROTACIÓN DE PUERTO ---
-// Generar un puerto aleatorio entre 9222 y 9999 para evitar detección y conflictos
-const MIN_PORT = 9222;
-const MAX_PORT = 9999;
-const CHROME_DEBUG_PORT = Math.floor(Math.random() * (MAX_PORT - MIN_PORT + 1)) + MIN_PORT;
+// --- CONFIGURACIÓN DE CHROME CON PUERTO FIJO ---
+// Se ha eliminado la aleatoriedad para usar siempre el mismo puerto y perfil
+const CHROME_DEBUG_PORT = 9222;
 
-// Usamos una carpeta de perfil vinculada al puerto para evitar bloqueos
+// Usamos una carpeta de perfil vinculada al puerto fijo
 const CHROME_USER_DATA_DIR = `C:\\chrome_debug_profile_${CHROME_DEBUG_PORT}`;
 
-console.log(`[INIT] Configuración de Stealth (Chrome): Usando Puerto ${CHROME_DEBUG_PORT}`);
+console.log(`[INIT] Configuración de Stealth (Chrome): Usando Puerto FIJO ${CHROME_DEBUG_PORT}`);
 console.log(`[INIT] Perfil de usuario temporal: ${CHROME_USER_DATA_DIR}`);
 
 // Configuración de tiempos humanos
@@ -884,7 +882,7 @@ async function scrapeCartTable(page, convertedExcelPath, inputFullData = []) {
     const pageData = await extractDataFromCurrentPage(page);
     if (pageData && pageData.length > 0) {
       allResults.push(...pageData);
-      console.log(`   -> Extraídos ${pageData.length} productos.`);
+      console.log(`   -> Extraídos ${pageData.length} productos.`);
     }
 
     const nextPageAvailable = await page.evaluate(async () => {
@@ -972,13 +970,13 @@ async function scrapeCartTable(page, convertedExcelPath, inputFullData = []) {
       console.log('\n================ RESULTADOS OBTENIDOS ================');
       outputData.forEach((item, index) => {
         console.log(`\n--- [ Producto #${index + 1} ] ---`);
-        console.log(`Nombre       : ${item.producto}`);
-        console.log(`$ Unitario   : $${item.precio_unitario}`);
-        console.log(`$ Público    : $${item.precio_publico}`);
-        console.log(`Stock        : ${item.stock.toUpperCase()}`);
+        console.log(`Nombre       : ${item.producto}`);
+        console.log(`$ Unitario   : $${item.precio_unitario}`);
+        console.log(`$ Público    : $${item.precio_publico}`);
+        console.log(`Stock        : ${item.stock.toUpperCase()}`);
         console.log(`EAN (Linked): ${item.ean} ${item.link_score > 0 ? '(Match: ' + item.link_score + ')' : ''}`);
         if (LINK_DEBUG && item.link_score === 0) {
-          console.log(`   (DEBUG) Falló match para: "${item.producto}"`);
+          console.log(`   (DEBUG) Falló match para: "${item.producto}"`);
         }
       });
       console.log('\n======================================================\n');
@@ -1288,6 +1286,35 @@ async function launchChromeManually() {
     for (const s of passSelectors) {
       const loc = page.locator(s).first();
       if (await loc.count()) { await humanTypeOnLocator(page, loc, PASSWORD); break; }
+    }
+
+    // ---------------------------------------------------------------------------
+    // NUEVO: CLICK EN CHECKBOX "RECORDAR SESIÓN" (Detectado por ID pExt)
+    // ---------------------------------------------------------------------------
+    try {
+      const checkboxSelector = 'input#pExt'; // Selector específico del ID visto en la imagen
+      const checkbox = page.locator(checkboxSelector).first();
+
+      if (await checkbox.count() > 0) {
+        const isChecked = await checkbox.isChecked();
+        if (!isChecked) {
+          console.log('[LOGIN] Checkbox "Recordar sesión" detectado y desmarcado. Click en él...');
+          await checkbox.click();
+          await wait(randomBetween(200, 500));
+        } else {
+          console.log('[LOGIN] Checkbox "Recordar sesión" ya estaba marcado.');
+        }
+      } else {
+        // Fallback genérico por si cambian el ID
+        const fallbackCheckbox = page.locator('input[type="checkbox"]').filter({ hasText: /Recordar/i }).first();
+        if (await fallbackCheckbox.count() > 0 && !(await fallbackCheckbox.isChecked())) {
+          console.log('[LOGIN] Checkbox (fallback) detectado. Click en él...');
+          await fallbackCheckbox.click();
+          await wait(randomBetween(200, 500));
+        }
+      }
+    } catch (errCheckbox) {
+      console.warn('[LOGIN] Advertencia no crítica al intentar clickear checkbox:', errCheckbox.message);
     }
 
     const clicked = await clickLoginButtonRobust(page);

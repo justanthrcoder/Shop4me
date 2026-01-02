@@ -54,6 +54,12 @@ function emitCompare(term) { send('compare:update', { monroe: lastTables.monroe,
 function emitStatus(payload) { send('batch:status', payload); }
 function emitProgress(progress) { send('batch:progress', progress); }
 
+// NUEVO: Emite el estado de ejecución (running/idle) para la UI
+function emitScraperStatus(name, status) {
+  // status: 'running' | 'idle'
+  send('scraper:status', { name, status });
+}
+
 // **** Cargar configuración ****
 async function loadSettingsFromFile() {
   try {
@@ -219,10 +225,12 @@ ipcMain.handle('save:txt', async (_evt, { defaultPath, content }) => {
   return { ok: true, path: res.filePath };
 });
 
+// HANDLER CRÍTICO PARA EL CAPTCHA
 ipcMain.handle('monroe:captcha-submit', async (_evt, captchaCode) => {
   const child = children.monroe;
   if (child && child.stdin && !child.stdin.destroyed) {
     try {
+      console.log(`[MAIN] Recibido código captcha: "${captchaCode}". Enviando a STDIN de Monroe...`);
       child.stdin.write(String(captchaCode || '') + '\n');
       emitLine('monroe', `[APP] Enviando código CAPTCHA al scraper...`);
       return { ok: true };
@@ -231,8 +239,22 @@ ipcMain.handle('monroe:captcha-submit', async (_evt, captchaCode) => {
       return { ok: false, error: e.message };
     }
   }
+  console.error('[MAIN] Error: El proceso de Monroe no existe o stdin está cerrado.');
   emitLine('monroe', `[APP] No se pudo enviar CAPTCHA (proceso no existe o stdin cerrado).`);
   return { ok: false, error: 'Scraper process not available' };
+});
+
+// NUEVO HANDLER: STOP SCRAPER MANUAL
+ipcMain.handle('scraper:stop', async (_evt, scraperName) => {
+  console.log(`[MAIN] Solicitud manual de detención para: ${scraperName}`);
+  emitLine(scraperName, `[APP] *** Detención manual solicitada por usuario ***`);
+
+  if (children[scraperName]) {
+    await killScraper(scraperName);
+    return { ok: true };
+  } else {
+    return { ok: false, error: 'Not running' };
+  }
 });
 
 const SCRAPERS_DIR = basePath('scrapers');
@@ -434,6 +456,9 @@ function spawnScraper(name, { headless } = {}) {
   if (!scriptPath) { emitLine(name, `[APP] No se encontró el script de ${name}. Se omite.`); return null; }
   emitLine(name, `[APP] Usando script: ${scriptPath}`);
 
+  // *** NOTIFICAR UI: Scraper Running ***
+  emitScraperStatus(name, 'running');
+
   const defaultHeadless =
     (typeof headless === 'boolean')
       ? headless
@@ -459,9 +484,6 @@ function spawnScraper(name, { headless } = {}) {
   const creds = appSettings?.credentials || {};
 
   // === SOLUCIÓN CRÍTICA: NODE_PATH INJECTION ===
-  // Determinamos dónde están los node_modules del proyecto principal
-  // Si estamos empaquetados (asar), están en app.asar.unpacked/node_modules
-  // Si estamos en dev, están en ./node_modules
   let nodePath = '';
   if (app.isPackaged) {
     nodePath = path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules');
@@ -469,13 +491,9 @@ function spawnScraper(name, { headless } = {}) {
     nodePath = path.join(__dirname, 'node_modules');
   }
 
-  // === SANITIZED CREDENTIALS BLOCK ===
-  // Note: All hardcoded defaults have been removed.
-  // The app will now only use what is in settings.json or env variables.
   const env = {
     ...process.env,
     ELECTRON_RUN_AS_NODE: '1',
-    // Inyectamos NODE_PATH para que el scraper encuentre playwright y xlsx
     NODE_PATH: nodePath,
 
     HEADLESS: defaultHeadless ? '1' : '0',
@@ -519,12 +537,13 @@ function spawnScraper(name, { headless } = {}) {
     emitLine(name, raw);
     const trimmedRaw = raw.trim();
 
+    // HANDLER DE CAPTCHA - DETECTA LA SEÑAL DEL SCRAPER
     if (name === 'monroe' && trimmedRaw.startsWith('@@@CAPTCHA_REQUIRED@@@')) {
       try {
         const payload = JSON.parse(trimmedRaw.replace('@@@CAPTCHA_REQUIRED@@@', '').trim());
         emitLine('monroe', '[APP] CAPTCHA requerido. Enviando a UI...');
         send('monroe:captcha-required', payload);
-        isReady[name] = false;
+        // isReady stays whatever it was; the scraper loop is paused awaiting input
       } catch (e) {
         emitLine('monroe', `[APP] Error parseando payload de CAPTCHA: ${e?.message || e}`);
       }
@@ -546,18 +565,15 @@ function spawnScraper(name, { headless } = {}) {
           emitTable('delsud', normRows);
 
           // === CACHE DEL SUD EANs ===
-          // Guardamos los EANs encontrados por DelSud para pasárselos a Suizo
           let cacheCount = 0;
           normRows.forEach(row => {
             const ean = row.ean;
             if (ean && /^\d{8,14}$/.test(ean)) {
-              // Clave por nombre normalizado (para búsqueda inexacta)
               const cleanName = String(row.producto || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
               if (cleanName) {
                 delSudCache.set(cleanName, ean);
                 cacheCount++;
               }
-              // También guardamos por término exacto si es posible
               if (row.query) {
                 delSudCache.set(row.query.trim().toUpperCase(), ean);
               }
@@ -642,6 +658,8 @@ function spawnScraper(name, { headless } = {}) {
     emitLine(name, `Proceso ${name} terminó (code=${code}, signal=${signal})`);
     children[name] = null; isReady[name] = false; isDone[name] = false;
     expectMonroeCsv = false;
+    // *** NOTIFICAR UI: Scraper Idle ***
+    emitScraperStatus(name, 'idle');
   });
 
   return child;
@@ -710,12 +728,6 @@ async function runOneTermAcrossAll(term) {
     }
 
     isDone[name] = false;
-    if (name === 'monroe' && appSettings?.experimental?.monroeFileAlgorithm) {
-      // do nothing special for single term if batch file mode is on?
-      // usually single term search uses standard input unless blocked.
-      // Assuming standard input works for single terms even in file algo mode,
-      // or we just rely on standard input.
-    }
     if (name === 'monroe') expectMonroeCsv = false;
 
     emitLine(name, `\n[APP] Enviando término: ${term}\n`);
@@ -794,6 +806,8 @@ async function killScraper(name) {
   }
   isReady[name] = false;
   isDone[name] = false;
+  // Asegurar que la UI se entere (aunque el evento 'exit' ya debería haberlo hecho)
+  emitScraperStatus(name, 'idle');
 }
 
 async function closeAllScrapers() {
@@ -813,6 +827,7 @@ async function closeAllScrapers() {
     if (children[n]) {
       try { children[n].kill('SIGKILL'); } catch (_) { }
       children[n] = null;
+      emitScraperStatus(n, 'idle');
     }
   }
 }

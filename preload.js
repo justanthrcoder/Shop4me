@@ -15,10 +15,13 @@ contextBridge.exposeInMainWorld('api', {
   saveSettings: (settings) => ipcRenderer.invoke('settings:save', settings),
   loadSettings: () => ipcRenderer.invoke('settings:load'),
 
-  // --- NUEVO: Función para abrir el selector de archivos ---
+  // --- Función para abrir el selector de archivos ---
   selectChromePath: () => ipcRenderer.invoke('settings:select-chrome-path'),
-  // --------------------------------------------------------
 
+  // --- NUEVO: Control manual de scrapers ---
+  stopScraper: (scraperName) => ipcRenderer.invoke('scraper:stop', scraperName),
+
+  // Listeners
   onLine: (cb) => ipcRenderer.on('scraper:line', (_e, payload) => cb(payload)),
   onTable: (cb) => ipcRenderer.on('scraper:table', (_e, payload) => cb(payload)),
   onCompareUpdate: (cb) => ipcRenderer.on('compare:update', (_e, payload) => cb(payload)),
@@ -32,4 +35,7 @@ contextBridge.exposeInMainWorld('api', {
   onCaptchaRequired: (cb) => ipcRenderer.on('monroe:captcha-required', (_e, payload) => cb(payload)),
 
   onScraperVisible: (cb) => ipcRenderer.on('ui:scraper-visible', (_e, visible) => cb(visible)),
+
+  // --- NUEVO: Estado individual de scrapers (Idle/Running) ---
+  onScraperStatus: (cb) => ipcRenderer.on('scraper:status', (_e, payload) => cb(payload)),
 });

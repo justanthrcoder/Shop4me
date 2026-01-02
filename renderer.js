@@ -66,6 +66,13 @@ const logs = {
   suizo: $('#log-suizo'),
 };
 
+// --- NUEVO: Botones de Stop para Scrapers ---
+const stopBtns = {
+  monroe: $('#btn-stop-monroe'),
+  delsud: $('#btn-stop-delsud'),
+  suizo: $('#btn-stop-suizo'),
+};
+
 // Priority Modal Elements
 const priorityBtn = $('#tab-compare #priorityBtn');
 const priorityModal = $('#priorityModal');
@@ -98,13 +105,12 @@ const generalInputs = {
   chrome_path: $('#chrome_path')
 };
 
-const selectChromeBtn = $('#selectChromeBtn'); // New button reference
+const selectChromeBtn = $('#selectChromeBtn');
 
 const settingsNavBtns = $$('.settings-nav-btn');
 const settingsPanes = $$('.settings-pane');
 
 /* ---------- Drawer lateral (Eliminado, limpiando referencias) ---------- */
-// hamburgerBtn eliminado del HTML
 drawerBackdrop?.addEventListener('click', () => appRoot?.classList.remove('menu-open'));
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -158,7 +164,7 @@ if (window.api?.onScraperVisible) {
 /* ---------- Estado ---------- */
 let fileItems = [];
 let displayedFileItemsCount = INITIAL_DISPLAY_LIMIT;
-let fileFilterTerm = ''; // Para el buscador de la lista
+let fileFilterTerm = '';
 let compareItems = [];
 let nextId = 1;
 let isBatchRunning = false;
@@ -469,14 +475,12 @@ function renderPredictiveResults(results) {
     const itemEl = document.createElement('div');
     itemEl.className = 'predictive-item';
 
-    // Al hacer click en el contenedor entero, se dispara el evento
     itemEl.innerHTML = `
       <div class="predictive-item-name">${escapeHtml(item.name)}</div>
       <div class="predictive-item-ean">${escapeHtml(item.ean)}</div>
     `;
 
     itemEl.addEventListener('click', (e) => {
-      // e.stopPropagation() si fuera necesario, pero aquí queremos que el padre maneje el evento
       qInput.value = item.ean;
       predictiveResultsEl.classList.add('hidden');
       if (addToCompareBtn) addToCompareBtn.click();
@@ -487,7 +491,7 @@ function renderPredictiveResults(results) {
   predictiveResultsEl.classList.remove('hidden');
 }
 
-/* ---------- Map rows (ADAPTADO A NUEVOS SCRAPERS 2025) ---------- */
+/* ---------- Map rows ---------- */
 function mapProvider(provider, row) {
   if (!row) return null;
 
@@ -631,7 +635,6 @@ function pickRow(arr) {
 /* ---------- Comparador UI ---------- */
 function showLoading(on) {
   if (!compareLoading) return;
-  captchaModal?.classList.add('hidden');
 
   if (on) {
     compareLoading.classList.remove('hidden');
@@ -897,7 +900,6 @@ function rerenderComparator() {
 
 /* ---------- Generación de HTML para una fila (para Diffing) ---------- */
 function buildRowHTML(item) {
-  // Recalcular lógica de item antes de render
   syncItemIdentity(item);
   item.bestKey = computeBestKey(item);
   if (!item.userSelected && item.selected !== item.bestKey) item.selected = item.bestKey;
@@ -979,7 +981,6 @@ function buildRowHTML(item) {
 }
 
 function bindRowListeners(row, item) {
-  // EAN Copy
   const copyEanElement = $('.copyable-ean', row);
   if (copyEanElement) {
     const eanValue = item.sku || item.term || '';
@@ -997,14 +998,12 @@ function bindRowListeners(row, item) {
     }
   }
 
-  // Eliminar
   $('.row-x', row)?.addEventListener('click', (ev) => {
     ev.stopPropagation();
     compareItems = compareItems.filter((it) => it.id !== item.id);
     rerenderComparator();
   });
 
-  // Quantity Controls
   const minus = $('.qtyMinus', row);
   const plus = $('.qtyPlus', row);
   const input = $('.qtyInput', row);
@@ -1012,7 +1011,7 @@ function bindRowListeners(row, item) {
   const updateQuantityAndRerender = (newQty) => {
     const v = Math.max(0, newQty);
     item.qty = v;
-    item.bestKey = computeBestKey(item); // Re-calculate best option
+    item.bestKey = computeBestKey(item);
     if (!item.userSelected) item.selected = item.bestKey;
     rerenderComparator();
   };
@@ -1021,7 +1020,6 @@ function bindRowListeners(row, item) {
   plus?.addEventListener('click', () => updateQuantityAndRerender((parseInt(input?.value, 10) || 0) + 1));
   input?.addEventListener('change', () => updateQuantityAndRerender(parseInt(input.value, 10) || 0));
 
-  // Provider Selection
   $$('.comp-supplier', row).forEach((cell) => {
     if (!cell.classList.contains('disabled')) {
       cell.addEventListener('click', () => {
@@ -1038,9 +1036,8 @@ function bindRowListeners(row, item) {
 function renderComparator() {
   if (!compareWrap) return;
 
-  // 1. Asegurar Header y Summary containers
   if (!compareWrap.querySelector('.comp-header')) {
-    compareWrap.innerHTML = ''; // Limpiar solo si no hay estructura
+    compareWrap.innerHTML = '';
     const header = document.createElement('div');
     header.className = 'comp-header';
     header.innerHTML = `
@@ -1060,7 +1057,6 @@ function renderComparator() {
     `;
     compareWrap.appendChild(header);
 
-    // Bind header buttons (delegate or re-bind)
     $$('button[data-key]', header).forEach((btn) => {
       btn.onclick = async (ev) => {
         ev.stopPropagation();
@@ -1078,18 +1074,13 @@ function renderComparator() {
     });
   }
 
-  // Actualizar estado de botones header
   $$('.comp-header button[data-key]').forEach((btn) => {
     btn.disabled = !providerHasSelection(btn.getAttribute('data-key'));
   });
 
-  // 2. Sincronizar Filas (Rows)
-  // Obtener IDs actuales en DOM
   const existingRows = Array.from(compareWrap.querySelectorAll('.comp-row:not(.comp-summary)'));
-  const existingIds = new Set(existingRows.map(r => parseInt(r.dataset.id)));
   const currentItemIds = new Set(compareItems.map(i => i.id));
 
-  // Eliminar filas que ya no existen
   existingRows.forEach(row => {
     const id = parseInt(row.dataset.id);
     if (!currentItemIds.has(id)) {
@@ -1097,11 +1088,8 @@ function renderComparator() {
     }
   });
 
-  // Agregar o Actualizar filas
   let lastRow = compareWrap.querySelector('.comp-header');
 
-  // Encontrar el punto de inserción correcto para mantener orden
-  // Iteramos sobre compareItems
   compareItems.forEach(item => {
     let row = compareWrap.querySelector(`.comp-row[data-id="${item.id}"]`);
     const newHtmlContent = buildRowHTML(item);
@@ -1117,13 +1105,11 @@ function renderComparator() {
         }
       }
     } else {
-      // Crear nueva fila
       row = document.createElement('div');
-      row.className = 'comp-row new-row'; // new-row para animación de entrada
+      row.className = 'comp-row new-row';
       row.dataset.id = item.id;
       row.innerHTML = newHtmlContent;
 
-      // Insertar después del último elemento procesado (header o fila anterior)
       if (lastRow && lastRow.nextSibling) {
         compareWrap.insertBefore(row, lastRow.nextSibling);
       } else {
@@ -1132,24 +1118,20 @@ function renderComparator() {
 
       bindRowListeners(row, item);
     }
-    lastRow = row; // Avanzar cursor
+    lastRow = row;
   });
 
-  // 3. Render Summary (Siempre al final)
   let sumRow = compareWrap.querySelector('.comp-summary');
   if (!sumRow) {
     sumRow = document.createElement('div');
     sumRow.className = 'comp-row comp-summary';
     compareWrap.appendChild(sumRow);
   } else {
-    // Mover al final por si acaso
     compareWrap.appendChild(sumRow);
   }
 
-  // Update Summary Content
   const { shares } = computeProviderShares();
 
-  // Construir HTML del summary
   let sumHtml = `<div class="comp-cell"><div class="summary-meta">Distribución de la compra</div></div>`;
   ['delsud', 'suizo', 'monroe'].forEach((key) => {
     const sh = shares[key];
@@ -1306,14 +1288,12 @@ function renderFileItemsList() {
     const row = document.createElement('div');
     row.className = 'file-list-row';
 
-    // Columna 1: Nombre
     const cellName = document.createElement('div');
     cellName.className = 'file-cell';
     cellName.textContent = item.name;
-    cellName.title = item.name; // Tooltip nativo
+    cellName.title = item.name;
     row.appendChild(cellName);
 
-    // Columna 2: EAN
     const cellEan = document.createElement('div');
     cellEan.className = 'file-cell file-cell-ean';
     cellEan.textContent = item.ean;
@@ -1327,7 +1307,6 @@ function renderFileItemsList() {
     });
     row.appendChild(cellEan);
 
-    // Columna 3: Input Cantidad
     const cellQty = document.createElement('div');
     cellQty.className = 'file-cell';
     cellQty.style.display = 'flex';
@@ -1345,13 +1324,11 @@ function renderFileItemsList() {
       item.qty = newQ;
       ev.target.value = newQ;
     });
-    // Evitar propagación click
     qtyInput.addEventListener('click', (ev) => ev.stopPropagation());
 
     cellQty.appendChild(qtyInput);
     row.appendChild(cellQty);
 
-    // Columna 4: Actions (Delete)
     const cellAction = document.createElement('div');
     cellAction.className = 'file-cell';
     cellAction.style.textAlign = 'center';
@@ -1361,7 +1338,6 @@ function renderFileItemsList() {
     xBtn.textContent = '✕';
     xBtn.title = 'Quitar';
     xBtn.addEventListener('click', () => {
-      // Encontrar item real en array (por referencia)
       fileItems = fileItems.filter(it => it !== item);
       renderFileItemsList();
       setStatus(`${fileItems.length} ítems restantes.`);
@@ -1395,7 +1371,7 @@ const monroeReadyPattern = /\[APP\] monroe está LISTO/i;
 window.api.onLine(({ scraper, line }) => {
   appendLog(scraper, line);
   if (scraper === 'monroe' && monroeReadyPattern.test(line)) {
-    captchaModal?.classList.add('hidden');
+    // Logic for Monroe Ready if needed
   }
 });
 
@@ -1505,11 +1481,54 @@ window.api.onStatus((st) => {
     setStatus(`Buscando ${st.index}/${st.total}: "${st.term}"…`);
   } else if (st.phase === 'done') {
     isBatchRunning = false;
-    rerenderComparator(); // Asegurar render final completo
+    rerenderComparator();
     showLoading(false);
     setStatus('Búsqueda completada.');
   }
 });
+
+// --- NUEVO: Listener para el estado de los scrapers (Idle/Running) ---
+if (window.api?.onScraperStatus) {
+  window.api.onScraperStatus(({ name, status }) => {
+    const btn = stopBtns[name];
+    if (!btn) return;
+
+    if (status === 'running') {
+      btn.classList.remove('status-idle');
+      btn.classList.add('status-running');
+      btn.innerHTML = `
+        <span style="font-size:16px;">🛑</span> Detener ${PROVIDER_LABEL[name] || name}
+      `;
+    } else {
+      btn.classList.remove('status-running');
+      btn.classList.add('status-idle');
+      btn.innerHTML = `
+        <span style="font-size:16px;">⚡</span> ${PROVIDER_LABEL[name] || name} Inactivo
+      `;
+    }
+  });
+}
+
+// --- NUEVO: Handlers para los botones de Stop ---
+Object.keys(stopBtns).forEach(key => {
+  const btn = stopBtns[key];
+  if (btn) {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      // Opcional: Feedback visual inmediato, aunque onScraperStatus lo confirmará
+      btn.disabled = true;
+      btn.textContent = 'Deteniendo...';
+      try {
+        await window.api.stopScraper(key);
+      } catch (err) {
+        console.error('Error stopping scraper:', err);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+});
+
 
 if (window.api?.onProgress) {
   window.api.onProgress(({ completedUnits, totalUnits }) =>
@@ -1517,6 +1536,7 @@ if (window.api?.onProgress) {
   );
 }
 
+// LÓGICA DE ENVÍO DE CAPTCHA
 async function handleCaptchaSubmit() {
   const code = captchaInput?.value.trim();
   if (!code || !captchaSubmitBtn || captchaSubmitBtn.disabled) return;
@@ -1551,11 +1571,9 @@ async function handleCaptchaSubmit() {
   }
 }
 
+// LÓGICA DE RECEPCIÓN DE CAPTCHA
 window.api.onCaptchaRequired((payload) => {
   if (payload?.imageBase64 && captchaModal && captchaImage && captchaInput) {
-    if (!compareLoading || !compareLoading.classList.contains('show')) {
-      showLoading(true);
-    }
     captchaImage.src = payload.imageBase64;
     captchaInput.value = '';
     captchaInput.disabled = false;
@@ -1695,7 +1713,6 @@ async function handleSaveSettings(e) {
   }
 }
 
-// ---- NEW: Handler for Chrome Path Selection ----
 if (selectChromeBtn) {
   selectChromeBtn.addEventListener('click', async () => {
     try {
@@ -1877,6 +1894,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           fileItems.length,
           'item',
           'items',
+          'items',
         )} para buscar.`,
       );
       if (qInput) {
@@ -1930,6 +1948,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             fileItems.length,
             'item',
             'items',
+            'items',
           )} cargados desde ${file.name}. Presiona "Buscar".`,
         );
       } catch (err) {
@@ -1953,7 +1972,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Filtro de Items
   if (filterFileItemsInput) {
     filterFileItemsInput.addEventListener('input', (e) => {
       fileFilterTerm = e.target.value;
